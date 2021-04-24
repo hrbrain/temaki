@@ -5,6 +5,7 @@ declare type Props = {
     onClickItem: (value: Value) => void;
     className?: string;
     isVisible?: boolean;
+    searchValue: string;
 };
 export declare const Component: React.NamedExoticComponent<Props>;
 export declare type Item = {

@@ -121,6 +121,7 @@ export const Component = React.memo<Props>(props => {
                             items={filteredItems}
                             onClickItem={changeValue}
                             values={props.values}
+                            searchValue={searchValue}
                         />
                     ) : (
                         <NotFoundText isVisible={isMenuVisible}>

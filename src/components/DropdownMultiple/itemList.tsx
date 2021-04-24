@@ -1,5 +1,6 @@
 import * as React from 'react'
 import styled from '~/modules/theme'
+import Highlighter from 'react-highlight-words'
 
 import * as IconFiles from '~/lib/iconFiles'
 import * as Icon from '~/components/Icon'
@@ -14,11 +15,12 @@ type Props = {
     onClickItem: (value: Value) => void
     className?: string
     isVisible?: boolean
+    searchValue: string
 }
 
 export const Component = React.memo<Props>(props => {
     const showItem = props.items.map(
-        renderItem(props.values, props.onClickItem)
+        renderItem(props.values, props.onClickItem, props.searchValue)
     )
     return (
         <ItemList
@@ -31,16 +33,18 @@ export const Component = React.memo<Props>(props => {
     )
 })
 
-const renderItem = (selected: Value[], onClickItem: (value: Value) => void) => (
-    item: Item,
-    index: number
-) => {
+const renderItem = (
+    selected: Value[],
+    onClickItem: (value: Value) => void,
+    searchValue: string
+) => (item: Item, index: number) => {
     return (
         <ItemComponent
             item={item}
             key={`${index}-${item.value}`}
             selected={selected}
             onClickItem={onClickItem}
+            searchValue={searchValue}
         />
     )
 }
@@ -60,6 +64,7 @@ type ItemProps = {
     item: Item
     selected: Value[]
     onClickItem: (value: Value) => void
+    searchValue: string
 }
 
 const ItemComponent = React.memo<ItemProps>(props => {
@@ -77,7 +82,18 @@ const ItemComponent = React.memo<ItemProps>(props => {
                 size="24px"
             />
             <Text>
-                {props.item.text}
+                {/* NOTE: searchValueが空の時にHighlighterを出すとtestが落ちる */}
+                {props.searchValue === '' ? (
+                    props.item.text
+                ) : (
+                    <Highlighter
+                        highlightClassName="highlight"
+                        searchWords={[props.searchValue]}
+                        autoEscape
+                        highlightStyle={highlightStyle}
+                        textToHighlight={props.item.text}
+                    />
+                )}
                 {props.item.remarks && (
                     <RemarksText>{props.item.remarks}</RemarksText>
                 )}
@@ -89,6 +105,12 @@ const ItemComponent = React.memo<ItemProps>(props => {
 //------------------------------------------------------------------------------
 // Styles
 //------------------------------------------------------------------------------
+
+// TODO: ハイライトのスタイル共通化
+const highlightStyle: React.CSSProperties = {
+    backgroundColor: '#FAF6CF',
+    fontWeight: 'bold'
+}
 
 const ItemList = styled.ul<{ isVisible?: boolean }>`
     display: block;
